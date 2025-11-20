@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"E:\\u\\manna_bollae\\lib\\features\\main\\screens\\home_screen_matching_first_temp.dart\")",
+      "Bash(start ms-settings:developers)",
+      "Bash(flutter run:*)",
+      "Bash(/d/flutter/flutter_windows_3.27.1-stable/flutter/bin/flutter --version)",
+      "Bash(powershell.exe -Command \"cd E:\\u\\manna_bollae; flutter devices\")",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
