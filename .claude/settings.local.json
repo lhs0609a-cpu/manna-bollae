@@ -30,7 +30,18 @@
       "Bash(cmd.exe /c \"if exist E:\\flutter\\bin\\flutter.bat (echo E:\\flutter) else (echo not found)\")",
       "Bash(cmd.exe /c \"cd /d E:\\u\\manna_bollae && D:\\flutter\\flutter_windows_3.27.1-stable\\flutter\\bin\\flutter.bat run -d chrome\")",
       "Bash(cmd.exe /c \"cd /d E:\\u\\manna_bollae && D:\\flutter\\flutter_windows_3.27.1-stable\\flutter\\bin\\flutter.bat run -d chrome --web-port=8080\")",
-      "Bash(gh auth status:*)"
+      "Bash(gh auth status:*)",
+      "Bash(gh repo create:*)",
+      "Bash(vercel --version:*)",
+      "Bash(vercel whoami:*)",
+      "Bash(vercel login:*)",
+      "Bash(D:flutterflutter_windows_3.27.1-stableflutterbinflutter.bat build web --release)",
+      "Bash(cmd.exe /c \"cd /d G:\\\\내 드라이브\\\\developer\\\\manna_bollae && D:\\\\flutter\\\\flutter_windows_3.27.1-stable\\\\flutter\\\\bin\\\\flutter.bat build web --release\")",
+      "Bash(cmd.exe /c \"cd /d \"\"G:\\\\내 드라이브\\\\developer\\\\manna_bollae\"\" && D:\\\\flutter\\\\flutter_windows_3.27.1-stable\\\\flutter\\\\bin\\\\flutter.bat build web --release 2>&1\")",
+      "Bash(cmd.exe /c \"where flutter 2>nul || echo not in PATH\")",
+      "Bash(cmd.exe /c \"if exist D:\\\\flutter\\\\flutter_windows_3.27.1-stable\\\\flutter\\\\bin\\\\flutter.bat \\(echo D: found\\) else \\(echo D: not found\\)\")",
+      "Bash(cmd.exe /c \"if exist E:\\\\flutter\\\\bin\\\\flutter.bat \\(echo E: found\\) else \\(echo E: not found\\)\")",
+      "Bash(git push)"
     ],
     "deny": [],
     "ask": []

@@ -1,8 +1,8 @@
 {
-  "buildCommand": "flutter build web --release --web-renderer canvaskit",
+  "buildCommand": "chmod +x build.sh && ./build.sh",
   "outputDirectory": "build/web",
   "framework": null,
-  "installCommand": "if ! command -v flutter &> /dev/null; then git clone https://github.com/flutter/flutter.git -b stable --depth 1 && export PATH=\"$PATH:`pwd`/flutter/bin\" && flutter doctor && flutter config --enable-web; fi",
+  "installCommand": "echo 'Dependencies will be installed in build script'",
   "devCommand": "flutter run -d web-server --web-hostname=0.0.0.0 --web-port=3000",
   "rewrites": [
     {
