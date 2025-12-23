@@ -3,7 +3,11 @@ import 'package:provider/provider.dart';
 import 'dart:ui';
 import '../../../core/constants/colors.dart';
 import '../../../core/constants/text_styles.dart';
+import '../../../models/user_model.dart';
+import '../../../models/chat_model.dart';
 import '../../auth/providers/auth_provider.dart';
+import '../../chat/providers/chat_provider.dart';
+import '../../chat/screens/chat_detail_screen.dart';
 
 class MatchingScreenTiktok extends StatefulWidget {
   const MatchingScreenTiktok({super.key});
@@ -180,10 +184,12 @@ class _MatchingScreenTiktokState extends State<MatchingScreenTiktok> {
   }
 
   void _showMatchDialog() {
+    final currentProfile = _profiles[_currentPage];
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => Dialog(
+      builder: (dialogContext) => Dialog(
         backgroundColor: Colors.transparent,
         child: Container(
           padding: const EdgeInsets.all(32),
@@ -208,7 +214,7 @@ class _MatchingScreenTiktokState extends State<MatchingScreenTiktok> {
               ),
               const SizedBox(height: 8),
               Text(
-                '서로 관심을 보였어요',
+                '${currentProfile.name}님과 매칭되었어요',
                 style: AppTextStyles.bodyLarge.copyWith(
                   color: Colors.white.withOpacity(0.9),
                 ),
@@ -218,7 +224,7 @@ class _MatchingScreenTiktokState extends State<MatchingScreenTiktok> {
                 children: [
                   Expanded(
                     child: TextButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Navigator.pop(dialogContext),
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.white.withOpacity(0.2),
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -238,8 +244,8 @@ class _MatchingScreenTiktokState extends State<MatchingScreenTiktok> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pop(context);
-                        // 채팅으로 이동
+                        Navigator.pop(dialogContext);
+                        _startChatWithProfile(currentProfile);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
@@ -280,6 +286,91 @@ class _MatchingScreenTiktokState extends State<MatchingScreenTiktok> {
         ],
       ),
     );
+  }
+
+  Future<void> _startChatWithProfile(MatchProfile profile) async {
+    final authProvider = context.read<AuthProvider>();
+    final chatProvider = context.read<ChatProvider>();
+
+    if (authProvider.user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('로그인이 필요합니다'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    // 로딩 표시
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    // 더미 사용자 ID 생성 (프로필 이름 기반)
+    final matchedUserId = 'demo_${profile.name}_${profile.age}';
+
+    // 채팅방 생성 또는 가져오기
+    final chatId = await chatProvider.getOrCreateChat(
+      authProvider.user!.uid,
+      matchedUserId,
+    );
+
+    if (chatId != null && mounted) {
+      // 로딩 다이얼로그 닫기
+      Navigator.pop(context);
+
+      // 더미 UserModel 생성
+      final matchedUser = UserModel(
+        id: matchedUserId,
+        email: '${profile.name.toLowerCase()}@example.com',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        profile: UserProfile(
+          basicInfo: BasicInfo(
+            name: profile.name,
+            birthDate: DateTime.now().subtract(Duration(days: profile.age * 365)),
+            gender: Gender.other,
+            mbti: profile.mbti,
+            region: profile.location,
+          ),
+          introduction: Introduction(
+            oneLiner: profile.bio.split('\n').first,
+            hobbies: profile.interests,
+          ),
+        ),
+      );
+
+      // 채팅방 정보 가져오기
+      final chat = await chatProvider.getChatById(chatId);
+
+      if (chat != null && mounted) {
+        // 채팅 화면으로 이동
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatDetailScreen(
+              chat: chat,
+              otherUser: matchedUser,
+            ),
+          ),
+        );
+      }
+    } else if (mounted) {
+      // 로딩 다이얼로그 닫기
+      Navigator.pop(context);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('채팅방 생성에 실패했습니다'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

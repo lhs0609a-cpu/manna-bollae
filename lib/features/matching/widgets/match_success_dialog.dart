@@ -173,6 +173,15 @@ class MatchSuccessDialog extends StatelessWidget {
 
     if (authProvider.user == null) return;
 
+    // 로딩 표시
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
     // 채팅방 생성 또는 가져오기
     final chatId = await chatProvider.getOrCreateChat(
       authProvider.user!.uid,
@@ -180,15 +189,45 @@ class MatchSuccessDialog extends StatelessWidget {
     );
 
     if (chatId != null && context.mounted) {
-      // 다이얼로그 닫기
+      // 로딩 다이얼로그 닫기
       Navigator.pop(context);
 
-      // 채팅 화면으로 이동하는 코드는 나중에 구현
-      // 일단 매칭 성공 메시지만 표시
+      // 채팅방 정보 가져오기
+      final chat = await chatProvider.getChatById(chatId);
+
+      if (chat != null && context.mounted) {
+        // 매칭 성공 다이얼로그 닫기
+        Navigator.pop(context);
+
+        // 채팅 화면으로 이동
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatDetailScreen(
+              chat: chat,
+              otherUser: matchedUser,
+              otherUserAvatar: avatar,
+            ),
+          ),
+        );
+      } else if (context.mounted) {
+        // 채팅방을 찾을 수 없는 경우
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('채팅방을 불러오는데 실패했습니다'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } else if (context.mounted) {
+      // 로딩 다이얼로그 닫기
+      Navigator.pop(context);
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${matchedUser.profile.basicInfo.name}님과 매칭되었습니다!'),
-          backgroundColor: AppColors.success,
+        const SnackBar(
+          content: Text('채팅방 생성에 실패했습니다'),
+          backgroundColor: Colors.red,
         ),
       );
     }

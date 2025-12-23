@@ -298,4 +298,5 @@ class IntimacyScoreRule {
   static const int messagePerCount = 1; // 메시지당 점수
   static const int consecutiveDayBonus = 10; // 연속 대화일 보너스
   static const int weeklyBonus = 50; // 일주일 연속 보너스
+  static const int videoCall = 50; // 영상통화 보너스
 }

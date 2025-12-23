@@ -200,6 +200,52 @@ class ChatIntimacyProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// 영상/음성 통화 시 친밀도 업데이트
+  Future<void> updateIntimacyOnVideoCall(
+    String userId,
+    String partnerId,
+  ) async {
+    try {
+      final now = DateTime.now();
+
+      if (_intimacies[userId] == null) {
+        _intimacies[userId] = {};
+      }
+
+      ChatIntimacy intimacy;
+      if (_intimacies[userId]![partnerId] == null) {
+        intimacy = ChatIntimacy(
+          userId: userId,
+          partnerId: partnerId,
+          firstChatDate: now,
+          lastChatDate: now,
+          totalMessageCount: 0,
+          consecutiveDays: 1,
+          dailyMessageCount: {},
+          intimacyScore: IntimacyScoreRule.videoCall,
+        );
+      } else {
+        intimacy = _intimacies[userId]![partnerId]!;
+        final newScore = (intimacy.intimacyScore + IntimacyScoreRule.videoCall).clamp(0, 1000);
+        final newLevel = IntimacyLevelExtension.fromScore(newScore);
+
+        intimacy = intimacy.copyWith(
+          lastChatDate: now,
+          intimacyScore: newScore,
+          currentLevel: newLevel,
+        );
+      }
+
+      _intimacies[userId]![partnerId] = intimacy;
+      await _saveIntimacy(userId);
+
+      notifyListeners();
+    } catch (e) {
+      _error = '친밀도 업데이트에 실패했습니다: $e';
+      notifyListeners();
+    }
+  }
+
   /// 테스트용: 친밀도 리셋
   Future<void> resetIntimacy(String userId, String partnerId) async {
     try {

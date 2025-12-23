@@ -112,6 +112,21 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
+  /// 채팅방 ID로 채팅방 가져오기
+  Future<Chat?> getChatById(String chatId) async {
+    try {
+      final doc = await _firestore.collection('chats').doc(chatId).get();
+      if (doc.exists && doc.data() != null) {
+        return Chat.fromMap(doc.data()!);
+      }
+      return null;
+    } catch (e) {
+      _error = '채팅방을 불러오는데 실패했습니다: $e';
+      notifyListeners();
+      return null;
+    }
+  }
+
   /// 메시지 전송
   Future<bool> sendMessage({
     required String chatId,
